@@ -1,0 +1,24 @@
+*.m4a
+.env
+.DS_Store
+
+# Large datasets
+data/raw/
+data/audio/
+data/catalog_embeddings.npy
+
+# Generated outputs
+results/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+.venv/
+
+# Ruff cache
+.ruff_cache/
+
+# Local Claude settings
+.claude/settings.local.json
