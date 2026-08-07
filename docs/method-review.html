@@ -1,0 +1,805 @@
+<title>Medicine Recovery — Method Review</title>
+
+<style>
+  :root {
+    color-scheme: light dark;
+
+    --ink:        #0B1618;
+    --ink-2:      #22383C;
+    --muted:      #5F7378;
+    --line:       #D3DFDD;
+    --line-soft:  #E4ECEA;
+    --paper:      #F4F7F6;
+    --surface:    #FFFFFF;
+
+    --accent:     #0B7A72;
+    --accent-2:   #DCEDEA;
+    --loss:       #A6462C;
+    --loss-2:     #F7E5DF;
+    --flat:       #7A8B8E;
+
+    --measure: 68ch;
+    --wide: 1120px;
+
+    --serif: ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink:       #E7EFED;
+      --ink-2:     #BACCC9;
+      --muted:     #8CA2A5;
+      --line:      #26393C;
+      --line-soft: #1B2B2E;
+      --paper:     #0B1416;
+      --surface:   #111E21;
+
+      --accent:    #46C3B5;
+      --accent-2:  #123330;
+      --loss:      #E5876A;
+      --loss-2:    #3B221B;
+      --flat:      #7E9295;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ink:       #E7EFED;
+    --ink-2:     #BACCC9;
+    --muted:     #8CA2A5;
+    --line:      #26393C;
+    --line-soft: #1B2B2E;
+    --paper:     #0B1416;
+    --surface:   #111E21;
+    --accent:    #46C3B5;
+    --accent-2:  #123330;
+    --loss:      #E5876A;
+    --loss-2:    #3B221B;
+    --flat:      #7E9295;
+  }
+
+  :root[data-theme="light"] {
+    --ink:       #0B1618;
+    --ink-2:     #22383C;
+    --muted:     #5F7378;
+    --line:      #D3DFDD;
+    --line-soft: #E4ECEA;
+    --paper:     #F4F7F6;
+    --surface:   #FFFFFF;
+    --accent:    #0B7A72;
+    --accent-2:  #DCEDEA;
+    --loss:      #A6462C;
+    --loss-2:    #F7E5DF;
+    --flat:      #7A8B8E;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16.5px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: var(--wide);
+    margin: 0 auto;
+    padding: 0 28px 96px;
+  }
+
+  .col { max-width: var(--measure); }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    padding: 64px 0 32px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .eyebrow span::before { content: "·"; margin-right: 12px; color: var(--muted); }
+  .eyebrow span:first-child::before { content: none; margin: 0; }
+
+  h1 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(2.1rem, 5vw, 3.15rem);
+    line-height: 1.08;
+    letter-spacing: -.015em;
+    text-wrap: balance;
+    margin: 0;
+    max-width: 20ch;
+  }
+
+  .standfirst {
+    font-size: 1.06rem;
+    color: var(--ink-2);
+    max-width: var(--measure);
+    margin: 0;
+  }
+
+  /* ---------- headline metric strip ---------- */
+
+  .strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    margin: 40px 0 0;
+  }
+
+  .stat { background: var(--surface); padding: 18px 20px; }
+
+  .stat dt {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 8px;
+  }
+
+  .stat dd {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 1.55rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -.02em;
+    line-height: 1;
+  }
+
+  .stat .from {
+    display: block;
+    margin-top: 7px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- sections ---------- */
+
+  section { padding-top: 64px; }
+
+  h2 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(1.42rem, 2.7vw, 1.85rem);
+    letter-spacing: -.012em;
+    line-height: 1.2;
+    text-wrap: balance;
+    margin: 0 0 6px;
+  }
+
+  h3 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 1.16rem;
+    margin: 0;
+    letter-spacing: -.008em;
+  }
+
+  .kicker {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 14px;
+  }
+
+  p { margin: 0 0 15px; }
+  .col > p:last-child { margin-bottom: 0; }
+
+  a { color: var(--accent); text-underline-offset: 3px; }
+  a:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  code {
+    font-family: var(--mono);
+    font-size: .875em;
+    background: var(--line-soft);
+    padding: .12em .38em;
+    border-radius: 2px;
+    word-break: break-word;
+  }
+
+  /* ---------- tables ---------- */
+
+  .scroll { overflow-x: auto; margin: 26px 0 0; border: 1px solid var(--line); }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 620px;
+    background: var(--surface);
+    font-variant-numeric: tabular-nums;
+  }
+
+  caption {
+    caption-side: bottom;
+    text-align: left;
+    font-size: 12.5px;
+    color: var(--muted);
+    padding: 12px 2px 0;
+  }
+
+  th, td {
+    text-align: right;
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--line-soft);
+    font-family: var(--mono);
+    font-size: 13.5px;
+    white-space: nowrap;
+  }
+
+  th:first-child, td:first-child {
+    text-align: left;
+    font-family: var(--sans);
+    font-size: 14.5px;
+    white-space: normal;
+    min-width: 210px;
+  }
+
+  thead th {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+    border-bottom: 1px solid var(--line);
+    text-align: right;
+  }
+
+  thead th:first-child { text-align: left; }
+  tbody tr:last-child td { border-bottom: none; }
+
+  tr.best td { background: var(--accent-2); }
+  tr.best td:first-child { font-weight: 600; }
+  tr.dim td:first-child { color: var(--ink-2); }
+
+  .zero { color: var(--loss); }
+  .na { color: var(--muted); font-style: italic; font-family: var(--sans); font-size: 13px; }
+
+  /* ---------- ledger ---------- */
+
+  .method {
+    border-top: 1px solid var(--line);
+    padding-top: 26px;
+    margin-top: 42px;
+    display: grid;
+    grid-template-columns: 130px minmax(0, 1fr);
+    gap: 30px;
+  }
+
+  @media (max-width: 720px) {
+    .method { grid-template-columns: 1fr; gap: 14px; }
+  }
+
+  .score {
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.15;
+  }
+
+  .score b {
+    display: block;
+    font-size: 1.7rem;
+    font-weight: 600;
+    letter-spacing: -.02em;
+  }
+
+  .score small {
+    display: block;
+    margin-top: 5px;
+    font-size: 10.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .ledger { display: flex; flex-direction: column; gap: 11px; margin: 18px 0 0; padding: 0; list-style: none; }
+
+  .ledger li {
+    display: grid;
+    grid-template-columns: 74px minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
+    font-size: 15px;
+  }
+
+  .tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 3px 0 0;
+    color: var(--muted);
+  }
+
+  .tag.gave { color: var(--accent); }
+  .tag.took { color: var(--loss); }
+
+  .evidence {
+    border-left: 2px solid var(--accent);
+    background: var(--surface);
+    padding: 14px 18px;
+    margin: 18px 0 0;
+    font-size: 14.5px;
+  }
+
+  .evidence p { margin: 0 0 8px; }
+  .evidence p:last-child { margin: 0; }
+  .evidence .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ---------- flow ---------- */
+
+  .track { margin-top: 30px; }
+
+  .track h3 {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+
+  .stages { display: flex; flex-wrap: wrap; gap: 7px; align-items: stretch; }
+
+  .stage {
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.35;
+    padding: 8px 11px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+  }
+
+  .stage.added { border-color: var(--accent); background: var(--accent-2); color: var(--ink); }
+  .stage.changed { border-color: var(--accent); border-style: dashed; }
+  .stage.dropped { border-color: var(--loss); background: var(--loss-2); text-decoration: line-through; color: var(--ink-2); }
+  .stage.broken { border-color: var(--loss); background: var(--loss-2); }
+
+  .arrow { display: flex; align-items: center; color: var(--muted); font-size: 12px; }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-top: 20px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .legend i { display: inline-block; width: 22px; height: 0; border-top: 2px solid; vertical-align: middle; margin-right: 7px; }
+
+  /* ---------- callout ---------- */
+
+  .callout {
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--loss);
+    background: var(--surface);
+    padding: 20px 22px;
+    margin-top: 28px;
+  }
+
+  .callout h3 { margin-bottom: 8px; }
+  .callout p:last-child { margin-bottom: 0; }
+
+  ol.next { counter-reset: n; list-style: none; padding: 0; margin: 24px 0 0; display: flex; flex-direction: column; gap: 16px; }
+
+  ol.next li {
+    counter-increment: n;
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  ol.next li::before {
+    content: counter(n, decimal-leading-zero);
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    padding-top: 3px;
+  }
+
+  footer {
+    margin-top: 72px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+
+  footer p { margin: 0 0 8px; }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="eyebrow">
+      <span>Method review</span>
+      <span>n = 60 calls</span>
+      <span>EN / HI / KN</span>
+    </div>
+    <h1>Four methods, one broken candidate list</h1>
+    <p class="standfirst">
+      Fuzzy matching, dense retrieval, context matching and an LLM reranker were each tried on
+      recovering a medicine name from noisy call-centre audio. Only one of them was ever the
+      problem — and it wasn't the one that got replaced. This is what each contributed, what each
+      cost, and where the pipeline had to be diverted.
+    </p>
+  </header>
+
+  <dl class="strip">
+    <div class="stat">
+      <dt>Top-1 overall</dt>
+      <dd>28.3%<span class="from">from 16.7%</span></dd>
+    </div>
+    <div class="stat">
+      <dt>English</dt>
+      <dd>54.2%<span class="from">from 41.7%</span></dd>
+    </div>
+    <div class="stat">
+      <dt>Hindi</dt>
+      <dd>11.8%<span class="from">from 0.0%</span></dd>
+    </div>
+    <div class="stat">
+      <dt>Kannada</dt>
+      <dd>10.5%<span class="from">from 0.0%</span></dd>
+    </div>
+    <div class="stat">
+      <dt>Per sample</dt>
+      <dd>0.2s<span class="from">from 2796s</span></dd>
+    </div>
+  </dl>
+
+  <section>
+    <p class="kicker">Scoreboard</p>
+    <h2>Every method on the same corrected ground truth</h2>
+    <div class="col">
+      <p>
+        All rows below are re-scored with the fixed evaluator, so they are directly comparable for
+        the first time. Previously each method had been judged against a ground-truth parser that
+        silently discarded 9 of the 60 samples.
+      </p>
+    </div>
+
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Method</th>
+            <th scope="col">Top-1</th>
+            <th scope="col">Top-3</th>
+            <th scope="col">EN</th>
+            <th scope="col">HI</th>
+            <th scope="col">KN</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="dim">
+            <th scope="row">Fuzzy match — original <code>WRatio</code></th>
+            <td>16.7%</td>
+            <td class="na">—</td>
+            <td>41.7%</td>
+            <td class="zero">0.0%</td>
+            <td class="zero">0.0%</td>
+          </tr>
+          <tr class="dim">
+            <th scope="row">Dense retrieval — multilingual MiniLM</th>
+            <td>3.3%</td>
+            <td>3.3%</td>
+            <td>8.3%</td>
+            <td class="zero">0.0%</td>
+            <td class="zero">0.0%</td>
+          </tr>
+          <tr class="dim">
+            <th scope="row">Context matching — composition + description</th>
+            <td class="na" colspan="5">never produced an end-to-end number</td>
+          </tr>
+          <tr class="dim">
+            <th scope="row">Dense retrieval + LLM rerank</th>
+            <td>11.7%</td>
+            <td>13.3%</td>
+            <td>29.2%</td>
+            <td class="zero">0.0%</td>
+            <td class="zero">0.0%</td>
+          </tr>
+          <tr class="best">
+            <th scope="row">Fuzzy match — repaired</th>
+            <td>28.3%</td>
+            <td>35.0%</td>
+            <td>54.2%</td>
+            <td>11.8%</td>
+            <td>10.5%</td>
+          </tr>
+          <tr class="best">
+            <th scope="row">Fuzzy match repaired + LLM rerank</th>
+            <td>30.0%</td>
+            <td class="na">—</td>
+            <td>50.0%</td>
+            <td>11.8%</td>
+            <td>21.1%</td>
+          </tr>
+        </tbody>
+      </table>
+      <caption>
+        Top-1 accuracy, n = 60 (EN 24, HI 17, KN 19). One sample moves the overall figure by
+        1.7 points and a single language by 4–6 points — read the per-language columns as
+        directional, not precise.
+      </caption>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Per method</p>
+    <h2>What each one gave, and what it took away</h2>
+
+    <article class="method">
+      <div class="score"><b>28.3%</b><small>Fuzzy</small></div>
+      <div>
+        <h3>Fuzzy string matching</h3>
+        <p class="col">
+          The right tool, configured in a way that destroyed it. Drug names are arbitrary proper
+          nouns — lexical matching is exactly the correct instinct, and after repair this remains
+          the backbone of the whole system.
+        </p>
+        <ul class="ledger">
+          <li><span class="tag gave">Gave</span><span>The only approach that ever beat noise. Carries all three languages after repair.</span></li>
+          <li><span class="tag took">Took</span><span><code>fuzz.WRatio</code> falls back to <em>partial ratio</em> when two strings differ in length, so the three-letter filler <code>ham</code> scored 90 against <code>astHAMon-L Tablet</code>. Filler outranked real names in every single result list.</span></li>
+          <li><span class="tag took">Took</span><span>N-grams capped at 4 words, but cleaned catalogue names run to 6 (<code>chemiclo sp 100mg 325mg 10mg tablet</code>). The full name was literally unformable.</span></li>
+          <li><span class="tag took">Took</span><span>2 796 s per sample — 46 hours for one full run. Nothing could be measured, so nothing could be fixed.</span></li>
+        </ul>
+        <div class="evidence">
+          <p class="label">Top-5 before repair — one Hindi call</p>
+          <p><code>Asthamon-L Tablet · Acvaketo S Shampoo · Alphamox 500mg Capsule</code></p>
+          <p>All scored 90.0. All matched on the filler token <code>ham</code>. Truth was <code>Fenexo 120 Tablet</code>.</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="method">
+      <div class="score"><b>3.3%</b><small>Dense</small></div>
+      <div>
+        <h3>Dense retrieval</h3>
+        <p class="col">
+          The weakest performer by a wide margin — five times worse than even the broken fuzzy
+          matcher. The model is not malfunctioning; it is answering a different question correctly.
+          Embeddings encode <em>topic</em>, and a brand name carries no topic.
+        </p>
+        <ul class="ledger">
+          <li><span class="tag gave">Gave</span><span>A multilingual encoder, in principle able to bridge Devanagari and Latin without transliteration.</span></li>
+          <li><span class="tag took">Took</span><span>In practice it bridged nothing: Hindi and Kannada stayed at 0%.</span></li>
+          <li><span class="tag took">Took</span><span>It ranked by <em>symptom</em> similarity, actively pulling results away from the drug named in the call.</span></li>
+          <li><span class="tag took">Took</span><span>Top-5 equals Top-1 at 3.3% — when it is wrong, the answer is absent from the list entirely, so no reranker can recover it.</span></li>
+        </ul>
+        <div class="evidence">
+          <p class="label">Call mentions a cough; truth is <code>Aneudox M Injection</code></p>
+          <p><code>Tusnox-A Cough Expectorant · Ambtic Cough Syrup · Deletus-BX Cough Expectorant</code></p>
+          <p>The retriever matched the symptom discussed in the conversation, not the medicine spoken aloud.</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="method">
+      <div class="score"><b>n/a</b><small>Context</small></div>
+      <div>
+        <h3>Context-based matching</h3>
+        <p class="col">
+          Only the embedding-generation half was ever scripted; ranking and evaluation stayed in the
+          notebook, so this never produced a number to compare. That absence is itself the finding —
+          it consumed effort without generating evidence.
+        </p>
+        <ul class="ledger">
+          <li><span class="tag took">Took</span><span>Its <code>context_text</code> is composition plus description — text that <strong>never contains the drug name</strong>. It can only match on what a drug <em>does</em>.</span></li>
+          <li><span class="tag took">Took</span><span>That is the same symptom axis dense retrieval already failed on, with the one discriminative field removed. Its failure was predictable from the dense-retrieval result.</span></li>
+          <li><span class="tag gave">Gave</span><span>A genuinely useful signal, aimed at the wrong stage: composition is strong evidence for <em>disambiguating</em> two candidates, not for <em>retrieving</em> them. It belongs in the reranker.</span></li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="method">
+      <div class="score"><b>+1.7</b><small>LLM Δ</small></div>
+      <div>
+        <h3>LLM reranking</h3>
+        <p class="col">
+          The most misread component. On broken candidates it looked like the strongest idea in the
+          system, lifting dense retrieval from 3.3% to 11.7%. It was in fact working near its
+          ceiling and papering over the real defect.
+        </p>
+        <ul class="ledger">
+          <li><span class="tag gave">Gave</span><span>+8.4 points over dense retrieval alone — the largest single gain of the original pipeline.</span></li>
+          <li><span class="tag took">Took</span><span>That gain was an illusion of headroom. The candidate list contained the right answer 13.3% of the time and the LLM converted 11.7% — it was already extracting <strong>88% of everything it was handed</strong>. It was never the bottleneck.</span></li>
+          <li><span class="tag gave">Gave</span><span>On repaired candidates it doubles Kannada, 10.5% → 21.1%, where lexical evidence is weakest.</span></li>
+          <li><span class="tag took">Took</span><span>It <em>hurts</em> English, 54.2% → 50.0%, second-guessing lexical matches that were already correct. Net across all 60: fixed 3, broke 2.</span></li>
+        </ul>
+        <div class="evidence">
+          <p class="label">Implication</p>
+          <p>Applied globally the LLM is worth +1.7 points. Applied only to romanized transcripts —
+          where its help is real and its harm is not — it should be worth appreciably more. It is a
+          repair tool for weak evidence, not a general-purpose ranker.</p>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <section>
+    <p class="kicker">Process flow</p>
+    <h2>Where the pipeline had to be diverted</h2>
+    <div class="col">
+      <p>
+        The original flow had no stage between speech-to-text and matching. Two-thirds of the data
+        arrived in Devanagari or Kannada script and was compared, character by character, against a
+        Latin-only catalogue — an operation that cannot succeed at any threshold.
+      </p>
+    </div>
+
+    <div class="track">
+      <h3>Before</h3>
+      <div class="stages">
+        <div class="stage">audio</div><div class="arrow">→</div>
+        <div class="stage broken">truncate 30s</div><div class="arrow">→</div>
+        <div class="stage">Sarvam STT</div><div class="arrow">→</div>
+        <div class="stage broken">n-gram ≤ 4</div><div class="arrow">→</div>
+        <div class="stage broken">WRatio vs catalog</div><div class="arrow">→</div>
+        <div class="stage dropped">dense retrieval</div><div class="arrow">→</div>
+        <div class="stage">LLM rerank</div><div class="arrow">→</div>
+        <div class="stage broken">eval (split on <code>/</code>)</div>
+      </div>
+    </div>
+
+    <div class="track">
+      <h3>After</h3>
+      <div class="stages">
+        <div class="stage">audio</div><div class="arrow">→</div>
+        <div class="stage broken">truncate 30s</div><div class="arrow">→</div>
+        <div class="stage">Sarvam STT</div><div class="arrow">→</div>
+        <div class="stage added">romanize (ITRANS)</div><div class="arrow">→</div>
+        <div class="stage added">collapse dosage</div><div class="arrow">→</div>
+        <div class="stage changed">n-gram ≤ 7</div><div class="arrow">→</div>
+        <div class="stage added">drop generic + filler</div><div class="arrow">→</div>
+        <div class="stage changed">literal <code>ratio</code></div>
+        <div class="stage added">+ phonetic key</div><div class="arrow">→</div>
+        <div class="stage added">combine by script</div><div class="arrow">→</div>
+        <div class="stage changed">LLM rerank</div><div class="arrow">→</div>
+        <div class="stage changed">eval (split on <code> / </code>)</div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <span><i style="border-color: var(--accent)"></i>added</span>
+      <span><i style="border-color: var(--accent); border-top-style: dashed"></i>changed</span>
+      <span><i style="border-color: var(--loss)"></i>defective / removed</span>
+    </div>
+
+    <div class="col" style="margin-top: 34px">
+      <h3 style="margin-bottom: 10px">The five diversions that mattered</h3>
+      <ul class="ledger">
+        <li><span class="tag">Script</span><span>Romanize Indic script before matching. Devanagari <code>फेनोक्सो</code> → <code>phenokso</code>, comparable to catalogue <code>Fenexo</code> for the first time.</span></li>
+        <li><span class="tag">Scorer</span><span>Replace <code>WRatio</code> with <code>ratio</code> and drop sub-4-character candidates, removing the partial-match inflation that poisoned every list.</span></li>
+        <li><span class="tag">Views</span><span>Score each candidate twice — literally, and on a Metaphone key. <code>phenokso 120 taibaleta</code> and <code>fenexo 120 tablet</code> both reduce to <code>FNKS 120 TBLT</code>.</span></li>
+        <li><span class="tag">Combine</span><span>Merge the two views based on source script: English spelling is trustworthy so phonetics only rescue it; romanized text has no reliable spelling, so agreement across both views decides. A single global weight measurably could not serve both.</span></li>
+        <li><span class="tag">Measure</span><span>Split ground truth only on a space-padded slash. <code>Lancas D 10mg/30mg Capsule</code> is one dosage, not two answers — 15% of the set had been unscoreable regardless of prediction.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ceiling</p>
+    <h2>What is still reachable, and what isn't</h2>
+    <div class="col">
+      <p>
+        Measuring whether any n-gram in a transcript can match the true name at all separates
+        ranking problems from data problems. The two are on opposite sides of this table.
+      </p>
+    </div>
+
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Language</th>
+            <th scope="col">≥ 90</th>
+            <th scope="col">≥ 70</th>
+            <th scope="col">≥ 60</th>
+            <th scope="col">Current</th>
+            <th scope="col">Headroom</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="best">
+            <th scope="row">English</th>
+            <td>62%</td><td>96%</td><td>100%</td><td>54.2%</td><td>large</td>
+          </tr>
+          <tr>
+            <th scope="row">Hindi</th>
+            <td class="zero">0%</td><td>18%</td><td>53%</td><td>11.8%</td><td class="na">near ceiling</td>
+          </tr>
+          <tr>
+            <th scope="row">Kannada</th>
+            <td class="zero">0%</td><td>11%</td><td>53%</td><td>10.5% / 21.1%</td><td class="na">near ceiling</td>
+          </tr>
+        </tbody>
+      </table>
+        <caption>
+          Share of samples where some transcript n-gram scores at least X against the true name.
+          Kannada shows fuzzy alone / with LLM rerank.
+        </caption>
+    </div>
+
+    <div class="callout">
+      <h3>The binding constraint is transcription, not matching</h3>
+      <p>
+        <code>transcribe.py:76</code> truncates every recording to 30 seconds via <code>ffmpeg -t 30</code>,
+        and in these calls the medicine is normally named at the <em>end</em>. Sample S020 cuts off
+        mid-sentence at <em>“yeah i think taking”</em>; S012 never names a drug at all, only
+        <em>“your antacid capsule”</em>.
+      </p>
+      <p>
+        No matcher can recover a name that was never transcribed. For Hindi and Kannada this cap —
+        not the algorithm — is what holds the numbers down, and lifting it is worth more than any
+        further tuning.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Next</p>
+    <h2>Where the remaining points are</h2>
+    <ol class="next">
+      <li><div><strong>Remove the 30-second truncation and re-transcribe.</strong> The single highest-value change, and the only one that raises the Hindi and Kannada ceilings rather than chasing them.</div></li>
+      <li><div><strong>Apply the LLM reranker only to romanized transcripts.</strong> It reliably helps where lexical evidence is weak and reliably hurts where it is strong; gating it captures the gain without the English regression.</div></li>
+      <li><div><strong>Close the English ranking gap.</strong> 54.2% against a ~96% ceiling is the largest pool of recoverable samples in the set, and it needs no new data.</div></li>
+      <li><div><strong>Move composition and description into the reranker.</strong> Useful for choosing between candidates, actively harmful for producing them — which is where it was being used.</div></li>
+      <li><div><strong>Hold out a validation split before tuning further.</strong> The current combination weights were fitted on the same 60 samples they are scored against.</div></li>
+    </ol>
+  </section>
+
+  <footer>
+    <p>
+      Scores produced by <code>src/run_baseline.py</code> and <code>src/evaluations/evaluate.py</code>;
+      regression checks in <code>src/tests/test_matching.py</code> (8 passing).
+    </p>
+    <p>
+      Two caveats carried forward: the combination weights are fitted, not validated, on this set;
+      and the pre-repair fuzzy figure of 16.7% comes from a run whose predictions file has since
+      been overwritten.
+    </p>
+  </footer>
+
+</div>
