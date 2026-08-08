@@ -6,6 +6,10 @@
 data/raw/
 data/audio/
 data/catalog_embeddings.npy
+data/context_embeddings.npy
+data/context_index.faiss
+*.npy
+*.faiss
 
 # Generated outputs
 results/
